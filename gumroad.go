@@ -24,6 +24,18 @@ type Client struct {
 	Licenses
 }
 
+// Error is an api error.
+type Error struct {
+	Status  int    `json:"status"`
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+}
+
+// Error implementation.
+func (e Error) Error() string {
+	return e.Message
+}
+
 // Licenses is the license api client.
 type Licenses struct{}
 
@@ -69,7 +81,15 @@ func (l *Licenses) Verify(product, key string) (v *License, err error) {
 	defer res.Body.Close()
 
 	if res.StatusCode >= 400 {
-		return nil, errors.New(res.Status)
+		err := Error{
+			Status: res.StatusCode,
+		}
+
+		if err := json.NewDecoder(res.Body).Decode(&err); err != nil {
+			return nil, errors.Wrap(err, "decoding error")
+		}
+
+		return nil, err
 	}
 
 	if err := json.NewDecoder(res.Body).Decode(&v); err != nil {
