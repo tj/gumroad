@@ -14,16 +14,6 @@ import (
 // form mime type.
 const formMime = "application/x-www-form-urlencoded"
 
-// New client.
-func New() *Client {
-	return &Client{}
-}
-
-// Client is the api client.
-type Client struct {
-	Licenses
-}
-
 // Error is an api error.
 type Error struct {
 	Status  int    `json:"status"`
@@ -34,6 +24,16 @@ type Error struct {
 // Error implementation.
 func (e Error) Error() string {
 	return e.Message
+}
+
+// New client.
+func New() *Client {
+	return &Client{}
+}
+
+// Client is the api client.
+type Client struct {
+	Licenses
 }
 
 // Licenses is the license api client.
